@@ -7,6 +7,7 @@ public class SpawnedObject : MonoBehaviour
     // Start is called before the first frame update
     GameObject network;
     Vector3 lastPosition = new Vector3();
+    bool isMoving = false;
     void Start()
     {
         network = GameObject.FindGameObjectsWithTag("NetworkManager")[0];
@@ -16,11 +17,20 @@ public class SpawnedObject : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(lastPosition != transform.position)
+         if(lastPosition != transform.position && !isMoving)
         {
-            lastPosition = transform.position;
-            network.SendMessage("SendPosition", gameObject);
+            isMoving = true;
         } 
+
+        if(isMoving && transform.position == lastPosition)
+        {
+
+            isMoving = false;
+           network.SendMessage("SendPosition", gameObject);
+        }
+
+        lastPosition = transform.position;
+       
     }
 
 

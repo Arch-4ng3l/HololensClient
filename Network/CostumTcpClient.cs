@@ -37,17 +37,23 @@ public class CostumTcpClient
 
     public void ConnectionLoop(int i)
     {
-        if (!socket.Connected) {
+
+        if (!socket.Connected)
+        {
             Thread.Sleep(i);
             i++;
-            socket.Connect(ip, port);
+            try
+            {
+                socket.Connect(ip, port);
+            }
+            catch (SocketException e)
+            {
+                ConnectionLoop(i);
+            }
         }
         return; 
     }
-    public void ReadFromStream()
-    {
-        //ReadConnectCallback(); 
-    }
+
     public void WriteToStream(byte[] data, int size)
     {
         dataToSend = data;

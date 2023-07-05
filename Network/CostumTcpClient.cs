@@ -42,11 +42,12 @@ public class CostumTcpClient
         {
             Thread.Sleep(i);
             i++;
+            if (i > 12) return;
             try
             {
                 socket.Connect(ip, port);
             }
-            catch (SocketException e)
+            catch (SocketException)
             {
                 ConnectionLoop(i);
             }
@@ -66,31 +67,6 @@ public class CostumTcpClient
         socket.Close();
     }
 
-    private void ReadConnectCallback()
-    {
-        if (!socket.Connected) return;
-
-        stream = socket.GetStream();
-
-        receiveBuffer = new byte[bufferSize];
-
-        ReceiveCallback();
-
-    }
-
-    private void ReceiveCallback()
-    {
-        // Recursion until its Empty
-        long byteLength = stream.Length - stream.Position;
-        if (byteLength > 0)
-        {
-            byte[] data = new byte[byteLength];
-            stream.Read(data, 0, data.Length);
-            Array.Copy(receiveBuffer, data, byteLength);
-            ReceiveCallback();
-        }
-    }
-
     private void WriteConnectCallback()
     {
         
@@ -101,5 +77,15 @@ public class CostumTcpClient
         }
         stream = socket.GetStream();
         stream.Write(dataToSend, 0, bytesLeft);   
+    }
+
+
+
+    public void ReadFromStream(byte[] buffer)
+    {
+        stream = socket.GetStream();
+        stream.Read(buffer, 0, 4);
+        int len = BitConverter.ToInt32(buffer, 0);
+        stream.Read(buffer, 0, len);
     }
 }
